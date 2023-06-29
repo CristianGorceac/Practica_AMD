@@ -1,0 +1,52 @@
+.data
+vector1: .word 1, 2, 3, 4
+vector2: .word 5, 6, 7, 8
+vector_sum: .space 16
+result_label: .asciiz "Suma vectorilor: "
+
+.text
+.globl main
+
+main:
+  la $t0, vector1    # Primul vector
+  la $t1, vector2    # Al doilea vector
+  la $t2, vector_sum # vectoir suma
+  li $v0, 4
+  la $a0, result_label # eticheta de afisare
+  syscall
+  
+  li $t3, 4          
+
+  loop1:
+    lw $s0, 0($t0)   # Încărcăm elementul curent din primul vector
+    lw $s1, 0($t1)   # Încărcăm elementul curent din cel de-al doilea vector
+    
+    add $s2, $s0, $s1  
+    sw $s2, 0($t2)     # Stocăm rezultatul în vectorul de sumă
+    
+	# Incrementam adresa celor 3 vectori
+    addi $t0, $t0, 4   
+    addi $t1, $t1, 4   
+    addi $t2, $t2, 4   
+
+    addi $t3, $t3, -1  
+    bnez $t3, loop1  
+
+
+  la $t2, vector_sum  # Reutilizăm registrul $t2
+  li $v0, 1          # Setăm codul de serviciu pentru afișarea valorii întregi
+  li $t3, 3
+  lw $a0, 0($t2)     # Încărcăm primul element al vectorului de sumă
+  syscall             
+
+
+loop2:
+  addi $t2, $t2, 4   
+  lw $a0, 0($t2)     # Încărcăm următorul element al vectorului de sumă
+  syscall             
+  addi $t3, $t3, -1 
+  bnez $t3, loop2
+
+  li $v0, 16          
+  syscall             
+
